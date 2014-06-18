@@ -19,45 +19,34 @@
  */
 
 /**
- * Handles the template
+ * Description of OutputBufferHelper
  *
  * @author Aron Þór
  */
-class Template {
+class OutputBufferHelper {
     
-    // The template name
-    private $templateName;
-    
-    private $css = array();
-    private $js = array();
-    
-    // Sets the template
-    public function Template($templateName){
-        $this->templateName = $templateName;
+    public static function start(){
+        ob_start();
     }
     
-    public function getTemplateName(){
-        return $this->templateName;
+    public static function stopAndClean(){
+        ob_end_clean();
     }
     
-    public function renderTemplate(){
-        
+    public static function stopAndFlush(){
+        ob_end_flush();
     }
     
-    private function getCSSIncludes(){
-        $return = "";
-        for($i = 0; $i < count($this->css); $i++){
-            $return .= "<link rel=\"stylesheet\" href=\"".$this->css[$i]."\" />";
-        }
-        return $return;
+    public static function flush(){
+        ob_flush();
     }
     
-    public function addCSSToHeader($cssFile) {
-        $this->css[] = $cssFile;
+    public static function clean(){
+        ob_clean();
     }
     
-    public function addJavaScriptToHeader($javascriptFile){
-        $this->js[] = $javascriptFile;
+    public static function getBufferContent(){
+        return ob_get_contents();
     }
     
 }

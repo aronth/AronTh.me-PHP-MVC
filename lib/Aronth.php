@@ -33,13 +33,31 @@ class Aronth {
     
     // The constructor that initializes the core
     public function AronTh(){
+        // Gets the configuration for the website and reads it
         self::$config = new Config('site');
         self::$config->read();
+        
+        // Predefined default values if the configs do not exist
+        // These are simply here for the first run to set it self to defaults
+        if(!self::$config->hasValue('sitename'))self::$config->setValue('sitename', 'AronTh.me');
+        if(!self::$config->hasValue('defaultController'))self::$config->setValue('defaultController', 'home');
+        if(!self::$config->hasValue('defaultPage'))self::$config->setValue('defaultPage', 'index');
+        if(!self::$config->hasValue('template'))self::$config->setValue('template', 'default');
+        
+        // Writes the configs if they have changed
+        self::$config->write();
     }
     
-    // Makes the core ready for the application
+    // Initializes objects and gets ready to execute the application
     public function init(){
+        // Start output buffering
+        OutputBufferHelper::start();
+        
+        // Break down the request
         self::$urlParameters = $this->splitUrl();
+        
+        // Sets up the template that will be used
+        
     }
     
     // Runs the Application and makes it ready for rendering
@@ -57,7 +75,7 @@ class Aronth {
         return explode('/', substr(self::getRequest(), 1));
     }
     
-    // 
+    // gets the URL parameters
     public static function getURLParameter($key){
         return isset(self::$urlParameters[$key]) ? self::$urlParameters[$key] : null;
     }

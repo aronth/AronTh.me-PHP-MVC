@@ -64,6 +64,7 @@ class Config {
     public function write(){
         file_put_contents(APP_CONFIG . $this->config.'.php', $this->getConfigAsPHP());
         $this->isChanged = false;
+        //echo 'Wrote config filge';
     }
     
     // Gets a value from the config array
@@ -85,7 +86,8 @@ class Config {
     
     // Writes the configs to a file if thay have been changed
     public function __destruct() {
-        $this->write();
+        if($this->isChanged)
+            $this->write();
     }
     
 }

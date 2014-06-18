@@ -19,45 +19,38 @@
  */
 
 /**
- * Handles the template
+ * Description of TimeHelper
  *
  * @author Aron Þór
  */
-class Template {
+class TimeHelper {
     
-    // The template name
-    private $templateName;
-    
-    private $css = array();
-    private $js = array();
-    
-    // Sets the template
-    public function Template($templateName){
-        $this->templateName = $templateName;
+    public static function getDayOfWeek(){
+        return date('w');
     }
     
-    public function getTemplateName(){
-        return $this->templateName;
+    public static function getDayOfMonth(){
+        return date('j');
     }
     
-    public function renderTemplate(){
-        
+    public static function getDayOfYear(){
+        return date('z');
     }
     
-    private function getCSSIncludes(){
-        $return = "";
-        for($i = 0; $i < count($this->css); $i++){
-            $return .= "<link rel=\"stylesheet\" href=\"".$this->css[$i]."\" />";
-        }
-        return $return;
+    public static function getWeekOfYear(){
+        return date('W');
     }
     
-    public function addCSSToHeader($cssFile) {
-        $this->css[] = $cssFile;
+    public static function isLeapYear(){
+        return date('L') == 1 ? true : false;
     }
     
-    public function addJavaScriptToHeader($javascriptFile){
-        $this->js[] = $javascriptFile;
+    public static function getYear(){
+        return date('Y');
+    }
+    
+    public static function getTimezone(){
+        return date('e');
     }
     
 }
