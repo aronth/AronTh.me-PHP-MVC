@@ -28,11 +28,16 @@ class Aronth {
     // The Config class instance for "site"
     private static $config;
     
+    // The template object used for handeling all rendering
+    private $template;
+    
     // The array of url parameters
     private static $urlParameters = array();
     
     // The constructor that initializes the core
     public function AronTh(){
+        Logger::$instance = new Logger('system');
+        
         // Gets the configuration for the website and reads it
         self::$config = new Config('site');
         self::$config->read();
@@ -57,7 +62,7 @@ class Aronth {
         self::$urlParameters = $this->splitUrl();
         
         // Sets up the template that will be used
-        
+        $this->template = new Template(self::$config->getValue('template'));
     }
     
     // Runs the Application and makes it ready for rendering
@@ -67,7 +72,7 @@ class Aronth {
     
     // Renders the output of the application and the template
     public function render(){
-        
+        $this->template->renderTemplate();
     }
     
     // Splits the url and returns it as an array

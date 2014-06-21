@@ -19,38 +19,27 @@
  */
 
 /**
- * Description of OutputBufferHelper
+ * Description of Logger
  *
  * @author Aron Þór
  */
-class OutputBufferHelper {
+class Logger {
     
-    public static function start(){
-        ob_start();
+    public static $instance;
+    
+    private $filename;
+    public $lines = array();
+    
+    public function __construct($filename) {
+        $this->filename = $filename;
     }
     
-    public static function stopAndClean(){
-        ob_end_clean();
+    public static function log($msg){
+        self::$instance->lines[] = $msg;
     }
     
-    public static function stopAndFlush(){
-        ob_end_flush();
-    }
-    
-    public static function flush(){
-        ob_flush();
-    }
-    
-    public static function clean(){
-        ob_clean();
-    }
-    
-    public static function getBufferContent(){
-        return ob_get_contents();
-    }
-    
-    public static function getBufferContentAndClean(){
-        return ob_get_clean();
+    public function __destruct() {
+        //print_r($this->lines);
     }
     
 }

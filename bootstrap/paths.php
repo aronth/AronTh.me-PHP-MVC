@@ -50,3 +50,4 @@ define('APP_LANG', WEB_ROOT . DS . 'app' . DS . 'lang' . DS);
 define('APP_MODEL', WEB_ROOT . DS . 'app' . DS . 'model' . DS);
 define('APP_TEMPLATE', WEB_ROOT . DS . 'app' . DS . 'template' . DS);
 define('APP_VIEW', WEB_ROOT . DS . 'app' . DS . 'view' . DS);
+define('APP_LOGS', WEB_ROOT . DS . 'app' . DS . 'logs' . DS);
