@@ -43,7 +43,7 @@ class Config {
     // Reads the provided file
     public function read(){
         if(file_exists(APP_CONFIG . $this->config . '.php')){
-            require_once APP_CONFIG . $this->config . '.php';
+            require APP_CONFIG . $this->config . '.php';
             $this->isChanged = false;
         }else{
             throw new Exception('Config file '.$this->config.' was not found');
@@ -82,6 +82,22 @@ class Config {
         if(!isset($this->configArray[$key]) || $this->configArray[$key] != $value)
             $this->isChanged = true;
         $this->configArray[$key] = $value;
+    }
+    
+    public function setDefaults($array){
+        foreach($array as $key => $val){
+            if(!isset($this->configArray[$key])){
+                $this->configArray[$key] = $val;
+                $this->isChanged = true;
+            }
+        }
+    }
+    
+    public function setDefaultValue($key, $val){
+        if(!isset($this->configArray[$key])){
+            $this->configArray[$key] = $val;
+            $this->isChanged = true;
+        }
     }
     
     // Writes the configs to a file if thay have been changed

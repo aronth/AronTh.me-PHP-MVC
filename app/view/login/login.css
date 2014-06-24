@@ -1,0 +1,20 @@
+div.signup_rightside_help{
+    float:right;
+    width:300px;
+    padding-left:10px;
+}
+
+div.signup_rightside_help ul{
+    margin:0px;
+    padding:0px;
+    margin-left:20px;
+}
+
+div.signup_rightside_help ul li{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+div.signup_form{
+    float:left;
+}

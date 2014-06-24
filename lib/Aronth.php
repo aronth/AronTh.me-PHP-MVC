@@ -25,16 +25,33 @@
  */
 class Aronth {
     
-    // The Config class instance for "site"
+    /**
+     * The Config instance that holds the configuration of the website
+     * @var \Config 
+     */
     private static $config;
     
-    // The template object used for handeling all rendering
+    /**
+     * The Config instance that holds the configuration for the database access
+     * @var \Config
+     */
+    private static $dbConfig;
+     
+    /**
+     * The instance of the Template class that is performing all the layout preperation and buildup
+     * @var \Template 
+     */
     private $template;
     
-    // The array of url parameters
+    /**
+     * These are all the parameters from the request
+     * @var array 
+     */
     private static $urlParameters = array();
     
-    // The constructor that initializes the core
+    /**
+     * This is the constructor
+     */
     public function AronTh(){
         Logger::$instance = new Logger('system');
         
@@ -53,10 +70,18 @@ class Aronth {
         self::$config->write();
     }
     
-    // Initializes objects and gets ready to execute the application
+    /**
+     * Initializes the core, prepares the template
+     */
     public function init(){
+        
+        
         // Start output buffering
         OutputBufferHelper::start();
+        
+        // Init User System
+        User::initUser();
+        User::checkForCookies(true);
         
         // Break down the request
         self::$urlParameters = $this->splitUrl();
@@ -65,34 +90,81 @@ class Aronth {
         $this->template = new Template(self::$config->getValue('template'));
     }
     
-    // Runs the Application and makes it ready for rendering
+    /**
+     * Gets the controller and executes all the thinking in the controller
+     */
     public function run(){
+        if(self::getURLParameter(0) == null)
+            self::$urlParameters[0] = self::$config->getValue('defaultController');
         
+        if(self::getURLParameter(1) == null)
+            self::$urlParameters[1] = self::$config->getValue('defaultPage');
+        
+        $controllerName = self::getURLParameter(0);
+        $controllerPage = self::getURLParameter(1);
+        
+        if(!file_exists(APP_CONTROLLER.$controllerName.'.php')){
+            $this->template->renderError('Controller ('.  htmlentities($controllerName).') could not be found');
+            Logger::log('');
+        }
+        
+        $controller = new $controllerName($controllerName);
+        if(!($controller instanceof Controller))
+            $this->template->renderError('Controller ('.  htmlentities($controllerName).') is not an instance of Controller');
+        
+        $controller->initController();
+        
+        if(!$controller->isAllowedPage($controllerPage))
+            $this->template->renderError('Page ('.  htmlentities($controllerPage).') is not accessible');
+        
+        call_user_func(array($controller, $controllerPage));
     }
     
-    // Renders the output of the application and the template
+    /**
+     * Renders the template after executon of the controller
+     */
     public function render(){
         $this->template->renderTemplate();
     }
     
-    // Splits the url and returns it as an array
+    /**
+     * Returns an array of all the parameteres in the browsers request to the site
+     * @return array
+     */
     private function splitUrl(){
-        return explode('/', substr(self::getRequest(), 1));
+        return explode('/', substr(NavigationHelper::getRequest(), 1));
     }
     
-    // gets the URL parameters
+    /**
+     * Gets the value from the request
+     * @param int $key Position in the array
+     * @return string|null The paramater or null if it does not exist
+     */
     public static function getURLParameter($key){
         return isset(self::$urlParameters[$key]) ? self::$urlParameters[$key] : null;
     }
     
-    // Returns the requested url parameters from the browsers address
-    public static function getRequest(){
-        return $_SERVER['REQUEST_URI'];
-    }
-    
-    // Returns the Site config instance
+    /**
+     * Gets the instance of the config that handels the website
+     * @return \Config The config instance
+     */
     public static function getSiteConfig(){
         return self::$config;
+    }
+    
+    /**
+     * Gets an active connection to the database
+     * @return \PDO
+     */
+    public static function getDatabaseConnection(){
+        self::$dbConfig = new Config('database');
+        self::$dbConfig->read();
+        $dsn = 'mysql:host='.self::$dbConfig->getValue('host').';port='.self::$dbConfig->getValue('port').';dbname='.self::$dbConfig->getValue('database');
+        $username = self::$dbConfig->getValue('user');
+        $passwd = self::$dbConfig->getValue('pass');
+        $options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING);
+        $db = new PDO($dsn, $username, $passwd, $options);
+        return $db;
     }
     
 }

@@ -1,9 +1,15 @@
 <?php
 
-$str = "{head}";
+require_once 'lib/password.php';
 
-$pattern = "/{(?P<name>\w+)}/";
+$timeTarget = 0.2; 
 
-preg_match($pattern, $str, $sections);
+$cost = 9;
+do {
+    $cost++;
+    $start = microtime(true);
+    password_hash("test", PASSWORD_BCRYPT, ["cost" => $cost]);
+    $end = microtime(true);
+} while (($end - $start) < $timeTarget);
 
-print_r($sections);
+echo "Appropriate Cost Found: " . $cost . "\n";

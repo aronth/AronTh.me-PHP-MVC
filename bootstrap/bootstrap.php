@@ -22,27 +22,15 @@
  * The autoload for the framework
  */
 
+require_once 'lib/password.php';
+
 function aronthAutoload($className){
-    $xpl = explode('\\', $className);
-    if(count($xpl) > 1){
-        if($xpl[0] == 'lib')
-            return require_once WEB_LIB.$className.'.php';
-        if($xpl[0] == 'controller')
-            return require_once APP_CONTROLLER.$className.'.php';
-        if($xpl[0] == 'model')
-            return require_once APP_MODEL.$className.'.php';
-        if($xpl[0] == 'helper')
-            return require_once APP_HELPER.$className.'.php';
-        return;
-    }
     if(file_exists(WEB_LIB.$className.'.php'))
         return require_once WEB_LIB.$className.'.php';
     if(file_exists(APP_CONTROLLER.$className.'.php'))
         return require_once APP_CONTROLLER.$className.'.php';
     if(file_exists(APP_HELPER.$className.'.php'))
         return require_once APP_HELPER.$className.'.php';
-    if(file_exists(APP_MODEL.$className.'.php'))
-        return require_once APP_MODEL.$className.'.php';
 }
 
 // Registering the autoload function for calling

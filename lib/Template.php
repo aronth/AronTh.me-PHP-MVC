@@ -28,14 +28,17 @@ class Template {
     // The template name
     private $templateName;
     
-    private $css = array();
-    private $js = array();
+    private static $css = array();
+    private static $js = array();
     
     private static $sectionVars = array();
     private static $pageTitle;
+    private static $viewData;
+    private static $viewVars;
     
     // Sets the template
     public function Template($templateName){
+        require_once APP_TEMPLATE.$templateName.DS.'template.php';
         $this->templateName = $templateName;
     }
     
@@ -56,10 +59,15 @@ class Template {
         $tags = $sections[1];
         foreach($tags as $tag){
             if($tag == 'view'){
-                
-                // Gets the view of the app running
-                
-                
+                $view = self::$viewData;
+                $pattern = '#{(.*)}#';
+                preg_match_all($pattern, $view, $tags);
+                $tags = $tags[1];
+                foreach($tags as $tag){
+                    if(isset(self::$viewVars[$tag]))
+                        $view = str_replace ('{'.$tag.'}', self::$viewVars[$tag], $view);
+                }
+                $layout = str_replace('{view}', $view, $layout);
                 continue;
             }
             $section = $this->getTemplateSection($tag);
@@ -86,7 +94,17 @@ class Template {
                 if($var == 'tpl_sitename')
                     $return = str_replace ('{tpl_sitename}', AronTh::getSiteConfig()->getValue('sitename'), $return);
                 if($var == 'tpl_title')
-                    $return = str_replace ('{tpl_title}', (isset(self::$pageTitle) && strlen (self::$pageTitle) > 0 ? self::$pageTitle : 'undefined'), $return);
+                    $return = str_replace ('{tpl_title}', formatPageTitle(self::$pageTitle), $return);
+                if($var == 'tpl_navlinks')
+                    $return = str_replace ('{tpl_navlinks}', formatNavigationLinks(), $return);
+                if($var == 'tpl_additionalStyleSheets')
+                    $return = str_replace ('{tpl_additionalStyleSheets}', $this->getCSSIncludes(), $return);
+                //if($var == 'tpl_additionalJavaScript')
+                    //$return = str_replace ('{tpl_additionalJavaScript}', $this->get(), $return);
+            }
+            if(function_exists('addToTemplateData')){
+                self::$sectionVars = array_merge(self::$sectionVars, addToTemplateData());
+                //echo 'added';
             }
             if(!isset(self::$sectionVars[$var]))
                 continue;
@@ -107,26 +125,55 @@ class Template {
     
     private function getCSSIncludes(){
         $return = "";
-        for($i = 0; $i < count($this->css); $i++){
-            $return .= "<link rel=\"stylesheet\" href=\"".$this->css[$i]."\" />";
+        foreach(self::$css as $sheet){
+            $return .= "<link rel=\"stylesheet\" href=\"".$sheet."\" />";
         }
         return $return;
     }
     
-    public function addCSSToHeader($cssFile) {
-        $this->css[] = $cssFile;
+    public static function addCSSToHeader($cssFile) {
+        self::$css[] = $cssFile;
     }
     
-    public function addJavaScriptToHeader($javascriptFile){
-        $this->js[] = $javascriptFile;
+    public static function addJavaScriptToHeader($javascriptFile){
+        self::$js[] = $javascriptFile;
     }
     
     public static function addValueToTemplate($key, $value){
-        self::$sectionVars[$var] = $value;
+        self::$sectionVars[$key] = $value;
     }
     
     public static function setPageTitle($title){
         self::$pageTitle = $title;
+    }
+    
+    public function renderError($msg, $die = true){
+        $sections = array();
+        $layout = $this->getTemplateLayout();
+        $pattern = '#{(.*)}#';
+        preg_match_all($pattern, $layout, $sections);
+        $tags = $sections[1];
+        foreach($tags as $tag){
+            if($tag == 'view'){
+                $layout = str_replace('{view}', $msg, $layout);
+                continue;
+            }
+            $section = $this->getTemplateSection($tag);
+            if($section != false)
+                $layout = str_replace('{'.$tag.'}', $section, $layout);
+            else
+                $layout = str_replace('{'.$tag.'}', 'Section ('.$tag.') was not found in the template', $layout);
+        }
+        echo $layout;
+        if($die)die;
+    }
+    
+    public static function setViewData($view){
+        self::$viewData = $view;
+    }
+    
+    public static function addViewVar($var, $val){
+        self::$viewVars[$var] = $val;
     }
     
 }

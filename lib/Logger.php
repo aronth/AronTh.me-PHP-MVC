@@ -38,8 +38,22 @@ class Logger {
         self::$instance->lines[] = $msg;
     }
     
+    private function getLogAsFile(){
+        $ret = "## This error log file was created on ".date('d/m/Y').' at '.date('G:s:u').PHP_EOL;
+        if(count(self::$instance->lines) > 0) {
+            foreach(self::$instance->lines as $line){
+                $ret.=$line.PHP_EOL;
+            }
+        }
+        return $ret;
+    }
+    
+    private function saveLogFile(){
+        file_put_contents(APP_LOGS.'LOG_'.Aronth::getURLParameter(0).'_'.Aronth::getURLParameter(1).'_'.date('d_m_Y_G_s_u').'.txt', $this->getLogAsFile());
+    }
+    
     public function __destruct() {
-        //print_r($this->lines);
+        $this->saveLogFile();
     }
     
 }

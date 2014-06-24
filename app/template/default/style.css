@@ -1,0 +1,242 @@
+/*
+Copyright (C) AronTh.me
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+/* 
+    Created on : 21.6.2014, 02:04:48
+    Author     : Aron Þór
+*/
+
+html, body{
+    margin:0px;
+    padding:0px;
+    background-color: #333;
+    font-family: Helvetica;
+    height:100%;
+}
+
+div.wrapper{
+    margin-left:auto;
+    margin-right:auto;
+    width:1000px;
+}
+
+div#main{
+    margin-top:70px;
+}
+
+div.navigation{
+    width:100%;
+    color:#EA7A17;
+    box-shadow: 0px 0px 7px black;
+    background-color: white;
+    height: 70px;
+    position: fixed;
+    top:0px;
+}
+
+div.navigation h1{
+    margin:0px;
+    padding:0px;
+    //padding-left: 10px;
+    font-size: 46pt;
+    display:inline;
+}
+
+div.navigation div.links{
+    float:right;
+}
+
+div.navigation div.links ul {
+    //margin-right:10px;
+    margin-top:35px;
+}
+
+div.navigation div.links ul li{
+    margin-left:10px;
+    display:inline;
+}
+
+div.navigation div.links ul li a{
+    color:#EA7A17;
+    text-decoration: none;
+    font-size:18pt;
+    font-weight:bold;
+}
+
+div.navigation div.links ul li a:hover{
+    color:#c46512;
+}
+
+div.navigation h1:hover{
+    color:#c46512;
+}
+
+div.wrapper div.side{
+    display:table-cell;
+    border-left:5px solid #EA7A17;
+    background-color:#555555;
+    padding:10px;
+    margin-right:10px;
+    width:200px;
+    vertical-align: top;
+    height:100vh;
+}
+
+div.wrapper div.contents{
+    display: table-cell;
+    padding:10px;
+    vertical-align: top;
+    height:100vh;
+    width:790px;
+    border-right: 5px solid #EA7A17;
+    background-color:#3c3c3c;
+    color:#C46512;
+    font-size:11pt;
+}
+
+div.contents p{
+    line-height: 17px;
+}
+
+div.wrapper div.contents p.bread{
+    border:3px dashed #EA7A17;
+    border-radius: 6px;
+    display:block;
+    margin:0px;
+    padding:10px;
+    color:#c46512;
+    margin-bottom:10px;
+}
+
+div.side div.side_module{
+    font-size:10pt;
+    padding-bottom:10px;
+    border-bottom:1px solid #EA7A17;
+    margin-bottom:30px;
+}
+
+div.side div.side_module h1{
+    color:#EA7A17;
+    font-size:17pt;
+    border-bottom:1px solid #EA7A17;
+    margin:0px;
+    padding:0px;
+    margin-bottom:10px;
+}
+
+div.side div.side_module p{
+    margin-left:10px;
+}
+
+div.side div.side_module button{
+    border:1px solid #EA7A17;
+    background-color: #333333;
+    margin:5px;
+    padding:5px;
+    border-radius:3px;
+    box-shadow: 0px 0px 3px black;
+    color:#EA7A17;
+    width:95%;
+}
+
+div.footer{
+    width:100%;
+    color:#EA7A17;
+    box-shadow: 0px 0px 7px black;
+    background-color: white;
+    height: 50px;
+}
+
+div.side div.side_module input[type=text]{
+    border:1px solid #EA7A17;
+    margin:5px;
+    padding:5px;
+    border-radius: 3px;
+    background-color: #444;
+    color:#EA7A17;
+    width:90%;
+    box-shadow: 0px 0px 3px black;
+}
+
+div.side div.side_module input[type=submit].search{
+    border:1px solid #EA7A17;
+    background-color: #333333;
+    margin:5px;
+    padding:5px;
+    border-radius:3px;
+    box-shadow: 0px 0px 3px black;
+    color:#EA7A17;
+    width:95%;
+}
+
+div.contents h1{
+    margin:0px;
+    padding:0px;
+    color:#EA7A17;
+    border-bottom:1px solid #EA7A17;
+    margin-bottom:20px;
+}
+
+div.contents h2{
+    margin:0px;
+    padding:0px;
+    color:#EA7A17;
+    border-bottom:1px solid #EA7A17;
+    width:50%;
+}
+
+div.contents form label{
+    color:#EA7A17;
+    margin-left:5px;
+}
+
+div.contents form input[type=text], div.contents form input[type=password]{
+    border:1px solid #EA7A17;
+    margin:5px;
+    margin-bottom:10px;
+    padding:5px;
+    border-radius: 3px;
+    background-color: #444;
+    color:#EA7A17;
+    width:250px;
+    box-shadow: 0px 0px 3px black;
+}
+
+div.contents form input[type=submit]{
+    border:1px solid #EA7A17;
+    background-color: #333333;
+    margin:5px;
+    padding:5px;
+    border-radius:3px;
+    box-shadow: 0px 0px 3px black;
+    color:#EA7A17;
+    width:262px;
+}
+
+div.contents div.border_left{
+    border-left:3px solid #EA7A17;
+}
+
+div.contents p.errormessage{
+    border:3px dashed #EA7A17;
+    border-radius: 6px;
+    display:block;
+    margin:0px;
+    padding:10px;
+    color:#c46512;
+    margin-bottom:10px;
+}

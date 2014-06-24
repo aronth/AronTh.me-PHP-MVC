@@ -1,0 +1,1 @@
+<div class="wrapper">This is my very beautiful footer</div>

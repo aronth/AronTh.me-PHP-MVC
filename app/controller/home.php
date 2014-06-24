@@ -18,20 +18,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-// Turn on error reporting and displaing 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-date_default_timezone_set('GMT');
-
-// Get the bootstrap to setup for us
-require_once 'bootstrap/paths.php';
-require_once WEB_BOOT.'bootstrap.php';
-
-// Get the core of the site
-$aronth = new Aronth();
-
-// Initialize, run and render
-$aronth -> init();
-$aronth -> run();
-$aronth -> render();
+/**
+ * Description of home
+ *
+ * @author Aron Þór
+ */
+class home extends Controller{
+    
+    public function initController() {
+        $this->registerPage('about');
+    }
+    
+    public function index() {
+        Template::setPageTitle('Home');
+        Template::addViewVar('pagetitle', 'Latest Articles');
+        $this->getView('index');
+    }
+    
+    public function about(){
+        Template::setPageTitle('About');
+        Template::addViewVar('pagetitle', 'About The Project');
+        $this->getView('about');
+    }
+}
