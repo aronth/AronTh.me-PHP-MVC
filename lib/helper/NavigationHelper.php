@@ -19,38 +19,36 @@
  */
 
 /**
- * Description of OutputBufferHelper
+ * Description of NavigationHelper
  *
  * @author Aron Þór
  */
-class OutputBufferHelper {
+class NavigationHelper {
     
-    public static function start(){
-        ob_start();
+    /**
+     * Returns the request from the browser
+     * @return string
+     */
+    public static function getRequest(){
+        return $_SERVER['REQUEST_URI'];
     }
     
-    public static function stopAndClean(){
-        ob_end_clean();
+    /**
+     * Returns a link to a page
+     * Feed it string arguments to make the link
+     * @return string The link
+     */
+    public static function getLinkToPage(){
+        return '/'.implode('/', func_get_args());
     }
     
-    public static function stopAndFlush(){
-        ob_end_flush();
-    }
-    
-    public static function flush(){
-        ob_flush();
-    }
-    
-    public static function clean(){
-        ob_clean();
-    }
-    
-    public static function getBufferContent(){
-        return ob_get_contents();
-    }
-    
-    public static function getBufferContentAndClean(){
-        return ob_get_clean();
+    /**
+     * Gets a link with the domain
+     * Feed it string arguments to make the link
+     * @return string the link
+     */
+    public static function getAbsoluteLinkToPage(){
+        return 'http://'.$_SERVER['SERVER_NAME'].'/'.implode('/', func_get_args());
     }
     
 }

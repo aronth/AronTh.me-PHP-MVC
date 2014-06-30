@@ -38,16 +38,19 @@ define('WEB_BOOT', WEB_ROOT . DS . 'bootstrap' . DS);
 
 define('WEB_LIB', WEB_ROOT . DS . 'lib' . DS);
 
+define('LIB_HELPER', WEB_LIB . 'helper' . DS);
+define('LIB_CONFIG', WEB_LIB . 'config' . DS);
+define('LIB_TEMPLATE', WEB_LIB . 'template' . DS);
+
+define('DIR_LOGS', WEB_ROOT . DS . 'logs' . DS);
+
 // 
 //// The Application
 //
 
 define('APP_BASE', WEB_ROOT . DS . 'app' . DS);
-define('APP_CONFIG', WEB_ROOT . DS . 'app' . DS . 'config' . DS);
-define('APP_CONTROLLER', WEB_ROOT . DS . 'app' . DS . 'controller' . DS);
-define('APP_HELPER', WEB_ROOT . DS . 'app' . DS . 'helper' . DS);
-define('APP_LANG', WEB_ROOT . DS . 'app' . DS . 'lang' . DS);
-define('APP_MODEL', WEB_ROOT . DS . 'app' . DS . 'model' . DS);
-define('APP_TEMPLATE', WEB_ROOT . DS . 'app' . DS . 'template' . DS);
-define('APP_VIEW', WEB_ROOT . DS . 'app' . DS . 'view' . DS);
-define('APP_LOGS', WEB_ROOT . DS . 'app' . DS . 'logs' . DS);
+define('APP_CONTROLLER', APP_BASE . 'controller' . DS);
+define('APP_LANG', APP_BASE . 'lang' . DS);
+define('APP_MODEL', APP_BASE . 'model' . DS);
+define('APP_TEMPLATE', APP_BASE . 'template' . DS);
+define('APP_VIEW', APP_BASE . 'view' . DS);

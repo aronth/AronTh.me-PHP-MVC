@@ -27,6 +27,8 @@ class Template {
     
     // The template name
     private $templateName;
+    private $templateDir;
+    private $templateExists = false;
     
     private static $css = array();
     private static $js = array();
@@ -37,13 +39,36 @@ class Template {
     private static $viewVars;
     
     // Sets the template
-    public function Template($templateName){
-        require_once APP_TEMPLATE.$templateName.DS.'template.php';
-        $this->templateName = $templateName;
+    public function Template($tplName){
+        $file = $tplName.DS.'template.php';
+        if(file_exists(APP_TEMPLATE.$file)){
+            Logger::log('Template set to '.$tplName.' in app dir');
+            require_once APP_TEMPLATE.$file;
+            $this->templateName = $tplName;
+            $this->templateDir = APP_TEMPLATE;
+            $this->templateExists = true;
+        }elseif(file_exists(LIB_TEMPLATE.$file)){
+            Logger::log('Template set to '.$tplName.' in lib dir');
+            require_once LIB_TEMPLATE.$file;
+            $this->templateName = $tplName;
+            $this->templateDir = LIB_TEMPLATE;
+            $this->templateExists = true;
+        }else{
+            Logger::log('Template '.$tplName.' could not be found in app nor lib dir');
+            $this->templateExists = false;
+        }
     }
     
     public function getTemplateName(){
         return $this->templateName;
+    }
+    
+    public function getTemplateDir(){
+        return $this->templateDir;
+    }
+    
+    public function doesTemplateExist(){
+        return $this->templateExists;
     }
     
     public function renderTemplate(){
@@ -80,8 +105,8 @@ class Template {
     }
     
     private function getTemplateSection($section){
-        if(!file_exists(APP_TEMPLATE.$this->templateName.DS.$section.'.tpl'))
-                return false;
+        if(!$this->doesTemplateExist())
+            return false;
         $vars = array();
         OutputBufferHelper::start();
         $this->getFileFromTemplate($section);
@@ -99,12 +124,11 @@ class Template {
                     $return = str_replace ('{tpl_navlinks}', formatNavigationLinks(), $return);
                 if($var == 'tpl_additionalStyleSheets')
                     $return = str_replace ('{tpl_additionalStyleSheets}', $this->getCSSIncludes(), $return);
-                //if($var == 'tpl_additionalJavaScript')
-                    //$return = str_replace ('{tpl_additionalJavaScript}', $this->get(), $return);
+                if($var == 'tpl_additionalJavaScript')
+                    $return = str_replace ('{tpl_additionalJavaScript}', $this->getJSIncludes(), $return);
             }
             if(function_exists('addToTemplateData')){
                 self::$sectionVars = array_merge(self::$sectionVars, addToTemplateData());
-                //echo 'added';
             }
             if(!isset(self::$sectionVars[$var]))
                 continue;
@@ -120,13 +144,21 @@ class Template {
     }
     
     private function getFileFromTemplate($file){
-        require APP_TEMPLATE.$this->templateName.DS.$file.'.tpl';
+        require $this->templateDir.$this->templateName.DS.$file.'.tpl';
     }
     
     private function getCSSIncludes(){
         $return = "";
         foreach(self::$css as $sheet){
             $return .= "<link rel=\"stylesheet\" href=\"".$sheet."\" />";
+        }
+        return $return;
+    }
+    
+    private function getJSIncludes(){
+        $return = "";
+        foreach(self::$js as $script){
+            $return .= "<script src=\"".$script."\" />";
         }
         return $return;
     }

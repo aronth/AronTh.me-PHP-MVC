@@ -24,48 +24,89 @@
  * @author Aron Þór
  */
 abstract class Controller {
+    /**
+     * An array of values allowed for calling from the request
+     * @var array
+     */
+    private $_registeredPages;
     
-    private $controllerName;
-    private $registeredPages;
+    /**
+     * Gives the controller a change to prepare it self for checks befor the pages are called
+     * Register your pages here
+     * Add links to the template for css and javascript file
+     */
+    abstract function _initController();
     
-    function __construct($controllerName) {
-        $this->controllerName = $controllerName;
-        $this->registerPage('index');
-        //$this->initController();
+    /**
+     * Checks if the given page name is allowed to call
+     * @param string $pagename
+     * @return boolean
+     */
+    function _isAllowedPage($pagename){
+        return isset($this->_registeredPages[$pagename]) && $this->_registeredPages[$pagename] != false;
     }
     
-    abstract function initController();
-    
-    abstract function index();
-    
-    function isAllowedPage($pagename){
-        return isset($this->registeredPages[$pagename]) && $this->registeredPages[$pagename] != false;
+    /**
+     * Register a page to be allowed to be called in a method
+     * @param string $pagename
+     */
+    function _registerPage($pagename){
+        $this->_registeredPages[$pagename] = true;
     }
     
-    function registerPage($pagename){
-        $this->registeredPages[$pagename] = true;
+    /**
+     * If you for any reason would want to unregister a page you do it here
+     * @param string $pagename
+     */
+    function _unregisterPage($pagename){
+        unset($this->_registeredPages[$pagename]);
     }
     
-    function unregisterPage($pagename){
-        unset($this->registeredPages[$pagename]);
-    }
-    
-    function getModel(){
+    /**
+     * Returns an instance of the model for the 
+     * @return \Model
+     */
+    function _getModel(){
         require_once APP_MODEL.Aronth::getURLParameter(0).'_model.php';
         $modelname = Aronth::getURLParameter(0).'_model';
         $model = new $modelname;
         return $model;
     }
     
-    function getView($file){
+    /**
+     * Gets the view file from the view directory
+     * @param string $file the name of the file, '.php' is added automatically
+     */
+    function _getView($file){
         OutputBufferHelper::start();
         require_once APP_VIEW.Aronth::getURLParameter(0).DS.$file.'.php';
         $view = OutputBufferHelper::getBufferContentAndClean();
         Template::setViewData($view);
     }
     
-    function addTemplateData($key, $val){
-        Template::addValueToTemplate($key, $val);
+    /**
+     * Add data to the view, finds the {$tag} in the view file and replaces it with the givel value 
+     * @param type $key the name/key, what you call the tag, do not input {article_heading_1}, instead type 'article_heading_1'
+     * @param type $val the value you want to be set
+     */
+    function _setViewTag($tag, $val){
+        Template::addViewVar($tag, $val);
+    }
+    
+    /**
+     * Redirects the usera after a given time, instant is default
+     * @param url $to
+     * @param intager $time
+     */
+    protected function _redirect($to, $time = 0){
+        if($time == 0)
+            header('Location: '.$to);
+        elseif($time > 0)
+            header('refresh:'.$time.';url='.$to);
+    }
+    
+    protected function _setPageTitle($pageTitle){
+        Template::setPageTitle($pageTitle);
     }
     
 }

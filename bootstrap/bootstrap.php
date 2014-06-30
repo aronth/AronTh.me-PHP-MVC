@@ -29,8 +29,8 @@ function aronthAutoload($className){
         return require_once WEB_LIB.$className.'.php';
     if(file_exists(APP_CONTROLLER.$className.'.php'))
         return require_once APP_CONTROLLER.$className.'.php';
-    if(file_exists(APP_HELPER.$className.'.php'))
-        return require_once APP_HELPER.$className.'.php';
+    if(file_exists(LIB_HELPER.$className.'.php'))
+        return require_once LIB_HELPER.$className.'.php';
 }
 
 // Registering the autoload function for calling

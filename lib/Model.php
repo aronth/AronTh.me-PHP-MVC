@@ -62,6 +62,11 @@ class Model {
         return (count($notThere) == 0 ? true : $notThere);
     }
     
+    /**
+     * Returns a filtered post input
+     * @param string $key The key in the $_POST array
+     * @return string filtered string from Post Data
+     */
     public function getPostData($key){
         return filter_input(INPUT_POST, $key);
     }

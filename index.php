@@ -18,20 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-// Turn on error reporting and displaing 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-date_default_timezone_set('GMT');
-
 // Get the bootstrap to setup for us
 require_once 'bootstrap/paths.php';
 require_once WEB_BOOT.'bootstrap.php';
 
-// Get the core of the site
-$aronth = new Aronth();
-
-// Initialize, run and render
-$aronth -> init();
-$aronth -> run();
-$aronth -> render();
+// Everything is now happening !!
+new Aronth();

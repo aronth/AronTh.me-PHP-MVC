@@ -1,7 +1,6 @@
 <div class="side_module">
-    <h1>Welcome</h1>
-    <a href="{loginlink}"><button>Login!</button></a>
-    <a href="{signuplink}"><button>Signup!</button></a>
+    <h1>{usertitle}</h1>
+    {user}
 </div>
 <div class="side_module">
     <h1>Search</h1>

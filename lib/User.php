@@ -25,51 +25,31 @@
  */
 class User {
     /**
-     * The instance of the user
-     * @var User
-     */
-    private static $instance = null;
-    
-    /**
      * The active connection to the database
      * @var PDO 
      */
-    private $database;
+    private static $database;
     
     /**
      * The data about the used that is logged in
      * @var array
      */
-    private $userData = array();
+    private static $userData = array();
     
     /**
      * Simply know if a user is logged in or not
      * Default: false
      * @var boolean
      */
-    private $isLoggedIn = false;
+    private static $isLoggedIn = false;
     
     /**
      * Initiates the user and stores it in a private static instance variable for every method to access it
      */
     public static function initUser(){
-        if(self::$instance == null)
-            self::$instance = new User();
-    }
-    
-    /**
-     * Constructor gets a database connection
-     */
-    public function __construct() {
-        $this->database = Aronth::getDatabaseConnection();
-    }
-    
-    /**
-     * Gets the user class instance
-     * @return User
-     */
-    public static function getUser(){
-        return self::$instance;
+        self::$database = Aronth::getDatabaseConnection();
+        self::checkForCookies();
+        Logger::log('User initiated');
     }
 
     /**
@@ -78,17 +58,34 @@ class User {
      * @param boolean $shouldLogin Should it try to login the user if he has the required information
      * @return boolean
      */
-    public static function checkForCookies($shouldLogin = false){
-        if(self::$instance == null)
-            self::initUser ();
+    public static function checkForCookies(){
         if(isset($_COOKIE['uid']) && isset($_COOKIE['pwd'])){
+            Logger::log('Login cookies found');
             $uid = $_COOKIE['uid'];
             $pwd = $_COOKIE['pwd'];
-            if($shouldLogin)
-                self::loginUser($uid, $pwd);
-            return true;
+            if(self::verifyUserLoginCookie($uid, $pwd)){
+                Logger::log('Login cookies verified');
+                self::$isLoggedIn = true;
+                self::getUserDataForId($uid);
+                return true;
+            }
         }
+        Logger::log('Login cookies not found');
         return false;
+    }
+    
+    public static function getUserData($key){
+        return self::$userData[$key];
+    }
+
+    public static function getUserDataForId($uid){
+        $q = self::$database->prepare('SELECT * FROM users WHERE id=:uid');
+        $q->bindValue(':uid', $uid);
+        if($q->execute()){
+            $data = $q->fetch(PDO::FETCH_ASSOC);
+            self::$userData = $data;
+            Logger::log('User data set for user '.$data['username']);
+        }
     }
     
     /**
@@ -96,11 +93,48 @@ class User {
      * @param intager $uid The User ID
      * @param string $password The hashed password
      */
-    public static function loginUser($uid, $password){
-        if(self::$instance == null)
-            self::initUser ();
-        
+    public static function setLoginCookies($uid, $password){
+        setcookie('uid', $uid, time()+3600, '/');
+        setcookie('pwd', $password, time()+3600, '/');
+        Logger::log('Login cookies set');
     }
+    
+    public static function verifyUserLogin($uid, $password, $shouldLogin = false){
+        $q = self::$database->prepare('SELECT passhash FROM users WHERE id=:uid');
+        $q->bindValue(':uid', $uid);
+        if($q->execute()){
+            Logger::log('Login:Passhash found in database for id');
+            $data = $q->fetch(PDO::FETCH_ASSOC);
+            if(password_verify($password, $data['passhash'])){
+                Logger::log('Login:Passhash hash been verified');
+                if($shouldLogin)
+                    self::setLoginCookies($uid, $data['passhash']);
+                return true;
+            }
+        }else{
+            Logger::log('Someone tryed to log in with an id that was not matched, that should not happen');
+        }
+        return false;
+    }
+    
+    public static function verifyUserLoginCookie($uid, $password, $shouldLogin = false){
+        $q = self::$database->prepare('SELECT passhash FROM users WHERE id=:uid');
+        $q->bindValue(':uid', $uid);
+        if($q->execute()){
+            Logger::log('Login:Passhash found in database for id');
+            $data = $q->fetch(PDO::FETCH_ASSOC);
+            if($password == $data['passhash']){
+                Logger::log('Login:Passhash hash been verified');
+                if($shouldLogin)
+                    self::setLoginCookies($uid, $data['passhash']);
+                return true;
+            }
+        }else{
+            Logger::log('Someone tryed to log in with an id that was not matched, that should not happen');
+        }
+        return false;
+    }
+    
      /**
       * Creates a row in the database for the user
       * @param string $username The requested username
@@ -114,7 +148,7 @@ class User {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $validKey = md5(time().$username);
         $regTime = time();
-        $q = $this->database->prepare('INSERT INTO users (username, passhash, email, validationKey, regtime) VALUES (:u, :p, :e, :v, :r)');
+        $q = self::$database->prepare('INSERT INTO users (username, passhash, email, validationKey, regtime) VALUES (:u, :p, :e, :v, :r)');
         $q->bindParam(':u', $username);
         $q->bindParam(':p', $hash);
         $q->bindParam(':e', $email);
@@ -125,24 +159,38 @@ class User {
     }
     
     /**
+     * Gets the id from the user with the provided username
+     * @param string $username The given username
+     * @return int the user id
+     */
+    public static function getUserIDByUsername($username){
+        $q = self::$database->prepare('SELECT id FROM users WHERE username=:name');
+        $q->bindValue(':name', $username);
+        if($q->execute()){
+            $data = $q->fetch(PDO::FETCH_ASSOC);
+            if($data)
+                return $data['id'];
+        }
+    }
+    
+    /**
      * Checks if the user is logged in
      * @return boolean
      */
     public static function isLoggedIn(){
-        if(self::$instance == null)
-            self::initUser();
-        return self::$instance->isLoggedIn;
+        return self::$isLoggedIn;
     }
     
     /**
      * Unsets the cookies, makes the cookie expire the last second and sets $isLoggedIn to false
      */
-    public static function logout(){
-        setcookie('uid', 0, -1);
-        setcookie('pwd', 0, -1);
+    public static function logoutUser(){
+        setcookie('uid', 0, -1, '/');
+        setcookie('pwd', 0, -1, '/');
         unset($_COOKIE['uid']);
         unset($_COOKIE['pwd']);
-        self::$instance->isLoggedIn = false;
+        self::$isLoggedIn = false;
+        self::$userData = null;
     }
     
 }

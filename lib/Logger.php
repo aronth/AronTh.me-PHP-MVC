@@ -25,35 +25,50 @@
  */
 class Logger {
     
-    public static $instance;
+    /**
+     * The log messages in an array
+     * @var array
+     */
+    private static $lines = array();
     
-    private $filename;
-    public $lines = array();
-    
-    public function __construct($filename) {
-        $this->filename = $filename;
-    }
-    
+    /**
+     * Add a message to the log if the framework is in debug mode
+     * @param string $msg The log message
+     */
     public static function log($msg){
-        self::$instance->lines[] = $msg;
+        if(Aronth::DEBUG)
+            self::$lines[] = $msg;
     }
     
-    private function getLogAsFile(){
-        $ret = "## This error log file was created on ".date('d/m/Y').' at '.date('G:s:u').PHP_EOL;
-        if(count(self::$instance->lines) > 0) {
-            foreach(self::$instance->lines as $line){
-                $ret.=$line.PHP_EOL;
+    /**
+     * Returns the prepared file as a string
+     * @return string
+     */
+    private static function getLogAsFile(){
+        $ret = "## This error log file was created on ".date('d/m/Y').' at '.date('G:s').PHP_EOL;
+        $ret .= "## Request sent ".NavigationHelper::getRequest().PHP_EOL;
+        $ret .= "## Version: ".Aronth::VERSION.'('.Aronth::BUILD.')'.PHP_EOL;
+        if(count(self::$lines) > 0) {
+            foreach(self::$lines as $line){
+                $ret.='-'.$line.PHP_EOL;
             }
         }
         return $ret;
     }
     
-    private function saveLogFile(){
-        file_put_contents(APP_LOGS.'LOG_'.Aronth::getURLParameter(0).'_'.Aronth::getURLParameter(1).'_'.date('d_m_Y_G_s_u').'.txt', $this->getLogAsFile());
+    /**
+     * Saves the file to the logs folder
+     */
+    private static function saveLogFile(){
+        file_put_contents(DIR_LOGS.'LOG.'.Aronth::getURLParameter(0).'.'.Aronth::getURLParameter(1).'_'.date('d:m:Y-G:s').'.txt', self::getLogAsFile());
     }
     
-    public function __destruct() {
-        $this->saveLogFile();
+    /**
+     * Saves the file when the script ends id the framework is in debug mode
+     */
+    public static function saveLog() {
+        if(Aronth::DEBUG)
+            self::saveLogFile();
     }
     
 }
